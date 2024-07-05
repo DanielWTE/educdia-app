@@ -68,3 +68,21 @@ export function SimpleButtonWithLoader({
     </button>
   );
 }
+
+export function SimpleButtonDanger({
+  text,
+  onClick,
+}: {
+  text: string;
+  onClick: any;
+}) {
+  return (
+    <button
+      type="button"
+      className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-red-600 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-50"
+      onClick={onClick}
+    >
+      {text}
+    </button>
+  );
+}
