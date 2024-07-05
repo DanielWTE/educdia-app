@@ -44,17 +44,21 @@ export function UnfinishedCourseCardComponent({
   answeredQuestions: number;
   session: string;
 }>) {
-
   const resetCourse = async () => {
-    const confirmed = window.confirm("Bist du sicher, dass du den Kurs zurücksetzen möchtest?");
+    const confirmed = window.confirm(
+      "Bist du sicher, dass du den Kurs zurücksetzen möchtest?"
+    );
 
     if (!confirmed) {
       return;
     }
 
-    const resetCourseRequest = await fetch(`/api/courses/reset?cid=${id}&cs=${session}`, {
-      method: "GET",
-    });
+    const resetCourseRequest = await fetch(
+      `/api/courses/reset?cid=${id}&cs=${session}`,
+      {
+        method: "GET",
+      }
+    );
 
     const resetCourseResponse = await resetCourseRequest.json();
 
@@ -68,7 +72,7 @@ export function UnfinishedCourseCardComponent({
       mutate(`/api/courses/get/`);
       mutate(`/api/courses/unfinished`);
     }
-  }
+  };
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 max-w-sm">
@@ -81,11 +85,15 @@ export function UnfinishedCourseCardComponent({
         {answeredQuestions}/{totalQuestions} Fragen beantwortet
       </p>
       <hr className="border-gray-200 border-b mt-4 mb-4" />
-      <div className="flex justify-between">
-        <Link href={`/course/${id}?session=${session}`}>
-          <SimpleButton text="Kurs fortsetzen" onClick={() => {}} />
-        </Link>
-        <SimpleButtonDanger text="Kurs zurücksetzen" onClick={resetCourse} />
+      <div className="flex justify-between flex-col sm:flex-row gap-4">
+        <div>
+          <Link href={`/course/${id}?session=${session}`}>
+            <SimpleButton text="Kurs fortsetzen" onClick={() => {}} />
+          </Link>
+        </div>
+        <div>
+          <SimpleButtonDanger text="Kurs zurücksetzen" onClick={resetCourse} />
+        </div>
       </div>
     </div>
   );
