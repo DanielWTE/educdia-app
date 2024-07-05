@@ -7,6 +7,7 @@ import { SimpleButtonWithLoader } from "../elements/Buttons";
 import { mutate } from "swr";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
+import { useGetCourseProgress } from "@/hooks/data/getCourseProgress";
 
 export default function CourseHandlerComponent({
   courseId,
@@ -19,16 +20,25 @@ export default function CourseHandlerComponent({
   const session = urlParams.get("session") as string;
   const { getQuestionData, getQuestionIsLoading, getQuestionError } =
     useGetQuestion({ courseId, session });
+  const { getCourseProgressData, getCourseProgressIsLoading, getCourseProgressError } =
+    useGetCourseProgress({ courseId, session });
   const [questionData, setQuestionData] = useState([]) as any;
   const [answer, setAnswer] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [courseProgress, setCourseProgress] = useState([]) as any;
 
   useEffect(() => {
     if (!getQuestionIsLoading && getQuestionData?.data) {
       setQuestionData(getQuestionData?.data);
     }
   }, [getQuestionData]);
+
+  useEffect(() => {
+    if (!getCourseProgressIsLoading && getCourseProgressData?.data) {
+      setCourseProgress(getCourseProgressData?.data);
+    }
+  }, [getCourseProgressData]);
 
   // call submitAnswer when enter and control is pressed
   useEffect(() => {
@@ -92,8 +102,9 @@ export default function CourseHandlerComponent({
       setAnswer("");
       setIsSubmitting(false);
       mutate(`/api/questions/get?cid=${courseId}&cs=${session}`);
+      mutate(`/api/courses/progress?cid=${courseId}&cs=${session}`);
     } else {
-      toast.error("Leider falsch.");
+      toast.error("Falsch!");
       setCorrectAnswer(checkAnswerResponse.correctAnswer);
       setIsSubmitting(false);
     }
@@ -103,16 +114,23 @@ export default function CourseHandlerComponent({
     setCorrectAnswer("");
     setAnswer("");
     mutate(`/api/questions/get?cid=${courseId}&cs=${session}`);
+    mutate(`/api/courses/progress?cid=${courseId}&cs=${session}`);
   };
 
   return (
     <div className="flex flex-col min-h-full justify-center items-center">
       <div className="border-b border-gray-200 bg-white p-6 rounded-lg shadow-sm md:w-[120vw] max-w-lg w-full">
-        {getQuestionIsLoading && !questionData ? (
+        {getQuestionIsLoading && !questionData && !courseProgress && getCourseProgressIsLoading ? (
           <div>Loading...</div>
         ) : (
           <div key={questionData.question_id}>
-            <div className="text-gray-500 text-sm">{questionData.category}</div>
+            <div className="flex justify-between">
+              <div className="text-gray-500 text-sm">{questionData.category}</div>
+              <div className="text-gray-500 text-sm">
+                {parseInt(courseProgress?.answeredQuestions) + 1} /{" "}
+                {parseInt(courseProgress?.totalQuestions)} Fragen
+              </div>
+            </div>
             <div className="text-lg font-semibold mt-2 max-w-lg">
               {questionData.question}
             </div>
