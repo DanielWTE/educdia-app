@@ -6,6 +6,8 @@ import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useValidateCourse } from "../../../../hooks/data/validateCourse";
 import { PageLoader } from "@/components/elements/Loader";
 import CourseHandlerComponent from "@/components/course/CourseHandler";
+import { useSearchParams } from "next/navigation";
+import { generateSessionString } from "@/utils/generator";
 
 const MainPage = ({ params }: { params: { id: number } }) => {
   const router = useRouter();
@@ -15,6 +17,7 @@ const MainPage = ({ params }: { params: { id: number } }) => {
       courseId: params.id,
     });
   const [courseData, setCourseData] = useState<any>({});
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -37,6 +40,14 @@ const MainPage = ({ params }: { params: { id: number } }) => {
       setShowLoader(false);
     }, 500);
     return () => clearTimeout(timer);
+  }, []);
+
+  // generate session and set to search params
+  const urlParams = new URLSearchParams(searchParams.toString());
+  urlParams.set("session", generateSessionString());
+  const newUrl = `/course/${params.id}?session=${generateSessionString()}`;
+  useEffect(() => {
+    window.history.replaceState({}, "", newUrl);
   }, []);
 
   return (

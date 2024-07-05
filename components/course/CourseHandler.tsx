@@ -3,8 +3,10 @@
 import { useGetQuestion } from "@/hooks/data/getQuestion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { SimpleButton, SimpleButtonWithLoader } from "../elements/Buttons";
+import { SimpleButtonWithLoader } from "../elements/Buttons";
 import { mutate } from "swr";
+import { useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function CourseHandlerComponent({
   courseId,
@@ -15,13 +17,19 @@ export default function CourseHandlerComponent({
     useGetQuestion({ courseId });
   const [questionData, setQuestionData] = useState([]) as any;
   const [answer, setAnswer] = useState("");
+  const [correctAnswer, setCorrectAnswer] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!getQuestionIsLoading && getQuestionData?.data) {
       setQuestionData(getQuestionData?.data);
     }
   }, [getQuestionData]);
+
+  // get session from search params
+  const urlParams = new URLSearchParams(searchParams.toString());
+  const session = urlParams.get("session");
 
   // call submitAnswer when enter and control is pressed
   useEffect(() => {
@@ -38,6 +46,18 @@ export default function CourseHandlerComponent({
     };
   }, [answer]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   const submitAnswer = async () => {
     if (!answer) {
@@ -45,13 +65,14 @@ export default function CourseHandlerComponent({
     }
 
     const data = {
+      session,
       question_id: questionData.question_id,
       answer,
     };
 
     setIsSubmitting(true);
 
-    const checkAnswerRequest = await fetch("/api/questions/answer", {
+    const checkAnswerRequest = await fetch("/api/answer/check", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,14 +80,31 @@ export default function CourseHandlerComponent({
       body: JSON.stringify(data),
     });
 
-    // timeout because the server is too fast
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    setAnswer("");
-    setIsSubmitting(false);
+    const checkAnswerResponse = await checkAnswerRequest.json();
 
+    if (!checkAnswerRequest.ok) {
+      toast.error("Ein Fehler ist aufgetreten. Bitte versuche es erneut.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (checkAnswerResponse.correct) {
+      toast.success("Richtig!");
+      setAnswer("");
+      setIsSubmitting(false);
+      mutate(`/api/questions/get?cid=${courseId}`);
+    } else {
+      toast.error("Leider falsch.");
+      setCorrectAnswer(checkAnswerResponse.correctAnswer);
+      setIsSubmitting(false);
+    }
+  };
+
+  const getNewQuestion = () => {
+    setCorrectAnswer("");
+    setAnswer("");
     mutate(`/api/questions/get?cid=${courseId}`);
-  }
+  };
 
   return (
     <div className="flex flex-col min-h-full justify-center items-center">
@@ -80,18 +118,34 @@ export default function CourseHandlerComponent({
               {questionData.question}
             </div>
             <textarea
+              autoFocus
+              disabled={isSubmitting || !!correctAnswer}
               rows={5}
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               placeholder="Deine Antwort..."
               className="w-full mt-4 p-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
             />
+            {correctAnswer && (
+              <div className="mt-4">
+                <div className="text-red-500">Richtige Antwort:</div>
+                <div>{correctAnswer}</div>
+              </div>
+            )}
             <div className="flex justify-center mt-4">
-              <SimpleButtonWithLoader
-                text="Antwort abschicken"
-                onClick={submitAnswer}
-                isLoading={isSubmitting}
-              />
+              {correctAnswer ? (
+                <SimpleButtonWithLoader
+                  text="Nächste Frage"
+                  onClick={getNewQuestion}
+                  isLoading={isSubmitting}
+                />
+              ) : (
+                <SimpleButtonWithLoader
+                  text="Antwort abschicken"
+                  onClick={submitAnswer}
+                  isLoading={isSubmitting}
+                />
+              )}
             </div>
           </div>
         )}

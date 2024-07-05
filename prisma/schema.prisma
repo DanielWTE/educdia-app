@@ -18,18 +18,52 @@ model categories {
 }
 
 model courses {
-  course_id   Int          @id @default(autoincrement())
-  name        String       @db.VarChar(256)
-  description String?      @db.Text
-  cre_dat     DateTime     @default(now()) @db.DateTime(0)
-  categories  categories[]
+  course_id       Int               @id @default(autoincrement())
+  name            String            @db.VarChar(256)
+  description     String?           @db.Text
+  cre_dat         DateTime          @default(now()) @db.DateTime(0)
+  categories      categories[]
+  course_sessions course_sessions[]
 }
 
 model questions {
-  question_id Int        @id @default(autoincrement())
-  category_id Int
-  question    String     @db.Text
-  categories  categories @relation(fields: [category_id], references: [category_id], onUpdate: Restrict, map: "questions_categories_category_id_fk")
+  question_id       Int                 @id @default(autoincrement())
+  category_id       Int
+  question          String              @db.Text
+  course_progresses course_progresses[]
+  categories        categories          @relation(fields: [category_id], references: [category_id], onUpdate: Restrict, map: "questions_categories_category_id_fk")
 
   @@index([category_id], map: "questions_categories_category_id_fk")
+}
+
+model course_progress_states {
+  course_progress_state_id Int                 @id @default(autoincrement())
+  name                     String              @db.VarChar(256)
+  course_progresses        course_progresses[]
+}
+
+model course_progresses {
+  course_progress_id     Int                    @id @default(autoincrement())
+  session_id             Int
+  question_id            Int
+  state_id               Int
+  course_progress_states course_progress_states @relation(fields: [state_id], references: [course_progress_state_id], onUpdate: Restrict, map: "course_progresses_course_progress_states_id_fk")
+  course_sessions        course_sessions        @relation(fields: [session_id], references: [course_session_id], onUpdate: Restrict, map: "course_progresses_course_sessions_course_session_id_fk")
+  questions              questions              @relation(fields: [question_id], references: [question_id], onUpdate: Restrict, map: "course_progresses_questions_question_id_fk")
+
+  @@index([state_id], map: "course_progresses_course_progress_states_id_fk")
+  @@index([session_id], map: "course_progresses_course_sessions_course_session_id_fk")
+  @@index([question_id], map: "course_progresses_questions_question_id_fk")
+}
+
+model course_sessions {
+  course_session_id Int                 @id @default(autoincrement())
+  course_id         Int
+  session           String              @unique(map: "course_sessions_pk") @db.VarChar(256)
+  user_id           String              @db.VarChar(256)
+  cre_dat           DateTime            @default(now()) @db.DateTime(0)
+  course_progresses course_progresses[]
+  courses           courses             @relation(fields: [course_id], references: [course_id], onUpdate: Restrict, map: "course_sessions_courses_course_id_fk")
+
+  @@index([course_id], map: "course_sessions_courses_course_id_fk")
 }
