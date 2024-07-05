@@ -40,20 +40,20 @@ export default function CourseHandlerComponent({
     }
   }, [getCourseProgressData]);
 
-  // call submitAnswer when enter and control is pressed
+  // call submitAnswer when enter and control is pressed ignore if correctAnswer is set
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && e.ctrlKey) {
+      if (e.key === "Enter" && e.ctrlKey && !correctAnswer) {
         submitAnswer();
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [answer]);
+  }, [answer, correctAnswer]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -127,7 +127,7 @@ export default function CourseHandlerComponent({
             <div className="flex justify-between">
               <div className="text-gray-500 text-sm">{questionData.category}</div>
               <div className="text-gray-500 text-sm">
-                {parseInt(courseProgress?.answeredQuestions) + 1} /{" "}
+                {parseInt(courseProgress?.answeredQuestions)} /{" "}
                 {parseInt(courseProgress?.totalQuestions)} Fragen
               </div>
             </div>
