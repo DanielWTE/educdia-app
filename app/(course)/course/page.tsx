@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { PageLoader } from "@/components/elements/Loader";
 
-export default function App() {
+export default function Course() {
   const router = useRouter();
 
   useEffect(() => {

@@ -1,23 +1,22 @@
 "use client";
 
-import { lazy, useEffect } from "react";
+import { lazy, useEffect, useState, Suspense, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { HomeIcon } from "@heroicons/react/24/outline";
 import { PageLoader } from "@/components/elements/Loader";
-import LayoutHeader from "@/components/app/layout/header";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import LayoutDesktop from "@/components/app/layout/DesktopComp";
+import LayoutMobile from "@/components/app/layout/MobileComp";
+import { Disclosure } from "@headlessui/react";
 
 const OverviewPage = lazy(() => import("@/subpages/app/overview"));
-const SettingsPage = lazy(() => import("@/subpages/app/settings"));
 
-const PageContent = ({ path }: { path: string }) => {
+const PageContent = ({ path, user }: { path: string; user: any }) => {
   switch (path[0]) {
     case "overview":
-      return <OverviewPage />;
-    case "settings":
-      return <SettingsPage />;
+      return <OverviewPage user={user} />;
     default:
-      return <OverviewPage />;
+      return <OverviewPage user={user} />;
   }
 };
 
@@ -25,58 +24,63 @@ const MainPage = ({ params }: { params: { path: string } }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { isLoading, isAuthenticated, user } = useKindeBrowserClient();
+  const [validPath, setValidPath] = useState(true);
 
-  const navigation = [
-    {
-      name: "Übersicht",
-      href: "/app/overview",
-      icon: HomeIcon,
-      current: pathname === "/app/overview",
-    },
-    {
-      name: "Einstellungen",
-      href: "/app/settings",
-      current: pathname === "/app/settings",
-    },
-  ];
+  const navigation = useMemo(
+    () => [
+      {
+        name: "Übersicht",
+        href: "/app/overview",
+        icon: HomeIcon,
+        current: pathname === "/app/overview",
+      }
+    ],
+    [pathname]
+  );
 
   useEffect(() => {
-    // valid paths
-    const validRootPaths = ["overview", "settings"];
-
+    const validRootPaths = ["overview"];
     if (!validRootPaths.includes(params.path[0])) {
-      // if not valid user path, redirect to user overview
-      window.location.href = `/app/overview`;
+      setValidPath(false);
+      router.push("/app/overview");
+    } else {
+      setValidPath(true);
     }
-  }, [params.path]);
+  }, [params.path, router]);
 
-  // if bro is not authenticated after loading, redirect to login
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push("/auth/login");
     }
   }, [isLoading, isAuthenticated, router]);
 
+  if (!validPath) {
+    return null;
+  }
+
   return (
-    <>
-      {!isLoading && isAuthenticated ? (
+    <div className="min-h-full">
+      {isAuthenticated && user ? (
         <>
-          <div className="min-h-full">
-            <LayoutHeader navigation={navigation} user={user} />
-            <div className="py-10">
-              <header>
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                  <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
-                    {navigation.find((nav) => nav.current)?.name}
-                  </h1>
-                </div>
-              </header>
-              <main>
-                <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-                  <PageContent path={params.path} />
-                </div>
-              </main>
-            </div>
+          <Disclosure as="nav" className="bg-white shadow-sm">
+            <LayoutDesktop navigation={navigation} user={user} />
+            <LayoutMobile navigation={navigation} user={user} />
+          </Disclosure>
+          <div className="py-10">
+            <header>
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+                  Deine {navigation.find((nav) => nav.current)?.name}
+                </h1>
+              </div>
+            </header>
+            <main>
+              <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+                <Suspense>
+                  <PageContent path={params.path} user={user} />
+                </Suspense>
+              </div>
+            </main>
           </div>
         </>
       ) : (
@@ -84,7 +88,7 @@ const MainPage = ({ params }: { params: { path: string } }) => {
           <PageLoader text="Lade Daten..." />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

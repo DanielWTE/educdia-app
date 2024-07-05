@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categories {
+  category_id Int         @id @default(autoincrement())
+  course_id   Int
+  name        String      @db.VarChar(256)
+  courses     courses     @relation(fields: [course_id], references: [course_id], onUpdate: Restrict, map: "categories_courses_course_id_fk")
+  questions   questions[]
+
+  @@index([course_id], map: "categories_courses_course_id_fk")
+}
+
+model courses {
+  course_id   Int          @id @default(autoincrement())
+  name        String       @db.VarChar(256)
+  description String?      @db.Text
+  cre_dat     DateTime     @default(now()) @db.DateTime(0)
+  categories  categories[]
+}
+
+model questions {
+  question_id Int        @id @default(autoincrement())
+  category_id Int
+  question    String     @db.Text
+  categories  categories @relation(fields: [category_id], references: [category_id], onUpdate: Restrict, map: "questions_categories_category_id_fk")
+
+  @@index([category_id], map: "questions_categories_category_id_fk")
+}
