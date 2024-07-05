@@ -12,8 +12,8 @@
   <h1 align="center">Educdia</h1>
 
   <p align="center">
-    Educdia is a web application to help students to learn and improve their knowledge with a course driven question and answer system.
-  </p>
+    Educdia is an online platform designed to assist students in enhancing their learning by utilizing a question and answer system based on  courses.
+</p>
 
 </div>
 
@@ -21,21 +21,28 @@
 
 ## What is the purpose of Educdia?
 
-Educdia is a web application that helps students to learn and improve their knowledge with a course driven question and answer system. The application is built with Next.js, Prisma, Kinde Auth and OpenAI's GPT-4o API.
+Educdia is an online platform designed to assist students in enhancing their knowledge through a question and answer system based on courses. The platform utilizes Next.js, Prisma, Kinde Auth, and OpenAI's GPT-4o API.
 
-Users can create an account and create courses with questions.
+Users have the option to sign up and create courses with questions.
 
-When a user starts a course, they will be asked questions and they can answer them, when they answer a question, they will get a response from the OpenAI's GPT-4o API with a JSON object with the answer and the correct status.
+Upon commencing a course, users will receive questions to answer. Subsequently, they will receive responses from OpenAI's GPT-4o API in JSON format after answering each question.
 
-If the answer is correct the next question will be loaded, when it is incorrect the user will get the correct answer and he can proceed to the next question.
+```json
+{ "correct": <true/false>, "answer": "<answer>" }
+```
+- `correct` is a boolean that indicates if the answer is correct or not.
+- `answer` is the correct answer to the question, if the user's answer is incorrect.
 
-The course progress will be saved in the database and the user can pause and continue the course at any time via the dashboard.
+When a user provides the correct answer, the next question will be displayed. In case of an incorrect answer, the user will receive the correct one and can then proceed to the next question.
+
+The progress of the course will be stored in the database, allowing users to pause and resume their learning at any time through the dashboard.
+
+Upon submitting the first answer to a question, a session will be initiated for the user. Users have the option to reset the course at any point through the dashboard.
 
 ## Developing locally
 
-After cloning the repo, run `npm install` in the root of the project to install all necessary dependencies. Then run `npm run dev` to start the development server.
+Upon cloning the repository, execute `npm install` at the project's root to install all necessary dependencies. Subsequently, launch the development server by running `npm run dev`.
 
-You need to set up a MySQL database and create a `.env` file in the root of the project with the envs of the `.env.example` file.
+Ensure to establish a MySQL database and generate a `.env` file in the project's root with environment variables from the `.env.example` file.
 
-You can create the SQL database with the prisma schema by running `npx prisma migrate dev --name init` and then `npx prisma db push`.
-
+To create the SQL database using the Prisma schema, utilize `npx prisma migrate dev --name init` followed by `npx prisma db push`.
