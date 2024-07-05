@@ -32,7 +32,7 @@ const MainPage = ({ params }: { params: { id: number } }) => {
       }
       setCourseData(getValidateCourseData?.data);
     }
-  }, [getValidateCourseData]);
+  }, [getValidateCourseData, getValidateCourseIsLoading, router]);
 
   const [showLoader, setShowLoader] = useState(true);
   useEffect(() => {

@@ -35,13 +35,13 @@ export default function CourseHandlerComponent({
     if (!getQuestionIsLoading && getQuestionData?.data) {
       setQuestionData(getQuestionData?.data);
     }
-  }, [getQuestionData]);
+  }, [getQuestionData, getQuestionIsLoading]);
 
   useEffect(() => {
     if (!getCourseProgressIsLoading && getCourseProgressData?.data) {
       setCourseProgress(getCourseProgressData?.data);
     }
-  }, [getCourseProgressData]);
+  }, [getCourseProgressData, getCourseProgressIsLoading]);
 
   // call submitAnswer when enter and control is pressed ignore if correctAnswer is set
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function CourseHandlerComponent({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [answer, correctAnswer]);
+  }, [answer, correctAnswer, isSubmitting]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
