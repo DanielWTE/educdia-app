@@ -20,8 +20,11 @@ export default function CourseHandlerComponent({
   const session = urlParams.get("session") as string;
   const { getQuestionData, getQuestionIsLoading, getQuestionError } =
     useGetQuestion({ courseId, session });
-  const { getCourseProgressData, getCourseProgressIsLoading, getCourseProgressError } =
-    useGetCourseProgress({ courseId, session });
+  const {
+    getCourseProgressData,
+    getCourseProgressIsLoading,
+    getCourseProgressError,
+  } = useGetCourseProgress({ courseId, session });
   const [questionData, setQuestionData] = useState([]) as any;
   const [answer, setAnswer] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
@@ -120,12 +123,17 @@ export default function CourseHandlerComponent({
   return (
     <div className="flex flex-col min-h-full justify-center items-center">
       <div className="border-b border-gray-200 bg-white p-6 rounded-lg shadow-sm md:w-[120vw] max-w-lg w-full">
-        {getQuestionIsLoading && !questionData && !courseProgress && getCourseProgressIsLoading ? (
+        {getQuestionIsLoading &&
+        !questionData &&
+        !courseProgress &&
+        getCourseProgressIsLoading ? (
           <div>Loading...</div>
         ) : (
           <div key={questionData.question_id}>
             <div className="flex justify-between">
-              <div className="text-gray-500 text-sm">{questionData.category}</div>
+              <div className="text-gray-500 text-sm">
+                {questionData.category}
+              </div>
               <div className="text-gray-500 text-sm">
                 {parseInt(courseProgress?.answeredQuestions)} /{" "}
                 {parseInt(courseProgress?.totalQuestions)} Fragen
@@ -170,6 +178,11 @@ export default function CourseHandlerComponent({
       {/* small hint */}
       <div className="mt-4 text-xs text-gray-500">
         Drücke <kbd>Strg</kbd> + <kbd>Enter</kbd> um die Antwort abzuschicken
+      </div>
+      <div className="mt-4 text-xs text-gray-500">
+        In dieser Session hast du {parseInt(courseProgress?.correctAnswers)}{" "}
+        richtige und {parseInt(courseProgress?.incorrectAnswers)} falsche
+        Antworten gegeben.
       </div>
       {/* text to go back to course overview */}
       <div className="bottom-0 fixed mb-4 text-center">
