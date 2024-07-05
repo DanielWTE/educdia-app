@@ -3,16 +3,16 @@ import swrGetFetcher from "../swrGetFetcher";
 
 const sampleData = {};
 
-export const useValidateCourse = ({ courseId }: { courseId: number }) => {
+export const useGetQuestion = ({ courseId }: { courseId: number }) => {
   let fetchedData, error;
 
   const swrOptions = {
-    revalidateOnFocus: true,
+    revalidateOnFocus: false,
   };
 
   if (process.env.NEXT_PUBLIC_DEV_MODE !== "true") {
     ({ data: fetchedData, error } = useSWR(
-      `/api/courses/validate?cid=${courseId}`,
+      `/api/questions/get?cid=${courseId}`,
       swrGetFetcher,
       swrOptions,
     ));
@@ -21,8 +21,8 @@ export const useValidateCourse = ({ courseId }: { courseId: number }) => {
   }
 
   return {
-    getValidateCourseData: fetchedData,
-    getValidateCourseIsLoading: !fetchedData && !error,
-    getValidateCourseError: error,
+    getQuestionData: fetchedData,
+    getQuestionIsLoading: !fetchedData && !error,
+    getQuestionError: error,
   };
 };

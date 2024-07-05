@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { useValidateCourse } from "../../../../hooks/data/validateCourse";
 import { PageLoader } from "@/components/elements/Loader";
+import CourseHandlerComponent from "@/components/course/CourseHandler";
 
 const MainPage = ({ params }: { params: { id: number } }) => {
   const router = useRouter();
@@ -13,7 +14,7 @@ const MainPage = ({ params }: { params: { id: number } }) => {
     useValidateCourse({
       courseId: params.id,
     });
-    const [courseData, setCourseData] = useState<any>({});
+  const [courseData, setCourseData] = useState<any>({});
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -30,13 +31,25 @@ const MainPage = ({ params }: { params: { id: number } }) => {
     }
   }, [getValidateCourseData]);
 
+  const [showLoader, setShowLoader] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-full">
       {!getValidateCourseIsLoading && courseData ? (
         <>
-            <div className="flex items-center justify-center h-screen">
-                <PageLoader text={`Lade Kurs ${courseData?.name}...`} />
-            </div>
+          <div className="flex items-center justify-center min-h-screen">
+            {showLoader ? (
+              <PageLoader text={`Lade Kurs ${courseData?.name}...`} />
+            ) : (
+              <CourseHandlerComponent courseId={params.id} />
+            )}
+          </div>
         </>
       ) : (
         <div className="flex items-center justify-center min-h-screen">

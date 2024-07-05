@@ -8,6 +8,18 @@ export function ButtonLoader({ isSubmitting }: { isSubmitting: boolean }) {
   );
 }
 
+export function ButtonLoaderWithoutMargin({
+  isSubmitting,
+}: {
+  isSubmitting: boolean;
+}) {
+  return (
+    <span>
+      {isSubmitting && <LuLoader2 size={20} className="animate-spin" />}
+    </span>
+  );
+}
+
 export function PageLoader({ text }: { text?: string }) {
   return (
     <div className="flex items-center justify-center h-96 w-full flex-col gap-2">

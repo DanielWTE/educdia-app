@@ -4,13 +4,13 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const courseId = req.nextUrl.searchParams.get('id');
+  const courseId = req.nextUrl.searchParams.get('cid');
   if (!courseId) {
     return NextResponse.json({ message: 'Please provide a course id', error: true }, { status: 400 });
   }
 
   try {
-    const session = getKindeServerSession(req);
+    const session = await getKindeServerSession(req);
     if (!session.isAuthenticated) {
       return NextResponse.json(
         { message: "You are not authenticated", success: false, error: true },

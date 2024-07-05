@@ -13,7 +13,6 @@ export default function Overview({ user }: any) {
   useEffect(() => {
     if (getCoursesData?.data) {
       setCourses(getCoursesData?.data);
-      console.log(courses);
     }
   }, [getCoursesData]);
   return (

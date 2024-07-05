@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const session = getKindeServerSession(req);
+    const session = await getKindeServerSession(req);
     if (!session.isAuthenticated) {
       return NextResponse.json(
         { message: "You are not authenticated", error: true },
