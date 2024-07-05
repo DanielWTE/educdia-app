@@ -7,7 +7,7 @@ export const useGetCourseProgress = ({ courseId, session }: { courseId: number; 
   let fetchedData, error;
 
   const swrOptions = {
-    revalidateOnFocus: true,
+    revalidateOnFocus: false,
   };
 
   if (process.env.NEXT_PUBLIC_DEV_MODE !== "true") {
