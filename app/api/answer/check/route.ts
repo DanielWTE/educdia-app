@@ -102,6 +102,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
       Überprüfe die Antwort, und gib an ob sie richtig oder falsch ist - wenn sie falsch ist, gib die richtige Antwort an.
       Folgende Kriterien sollten unbedingt beachtet werden:
+      - Die Rechte orientieren sich an Österreichischen Rechtsvorschriften.
       - Eine Antwort muss klar und präzise sein.
       - Eine Antwort muss verständlich sein.
       - Falls die Antwort nicht wirklich falsch ist, gib die Antwort als richtig an.

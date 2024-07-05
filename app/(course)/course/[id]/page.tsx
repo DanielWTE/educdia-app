@@ -43,12 +43,19 @@ const MainPage = ({ params }: { params: { id: number } }) => {
   }, []);
 
   // generate session and set to search params
-  const urlParams = new URLSearchParams(searchParams.toString());
-  urlParams.set("session", generateSessionString());
-  const newUrl = `/course/${params.id}?session=${generateSessionString()}`;
   useEffect(() => {
+    const urlParams = new URLSearchParams(searchParams.toString());
+    let sessionString = urlParams.get("session");
+
+    if (!sessionString) {
+      sessionString = generateSessionString();
+      urlParams.set("session", sessionString);
+    }
+
+    // Update the URL without reloading the page
+    const newUrl = `/course/${params.id}?${urlParams.toString()}`;
     window.history.replaceState({}, "", newUrl);
-  }, []);
+  }, [searchParams, params.id]);
 
   return (
     <div className="min-h-full">

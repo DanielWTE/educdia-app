@@ -13,23 +13,22 @@ export default function CourseHandlerComponent({
 }: {
   courseId: number;
 }) {
+  // get session from search params
+  const searchParams = useSearchParams();
+  const urlParams = new URLSearchParams(searchParams.toString());
+  const session = urlParams.get("session") as string;
   const { getQuestionData, getQuestionIsLoading, getQuestionError } =
-    useGetQuestion({ courseId });
+    useGetQuestion({ courseId, session });
   const [questionData, setQuestionData] = useState([]) as any;
   const [answer, setAnswer] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!getQuestionIsLoading && getQuestionData?.data) {
       setQuestionData(getQuestionData?.data);
     }
   }, [getQuestionData]);
-
-  // get session from search params
-  const urlParams = new URLSearchParams(searchParams.toString());
-  const session = urlParams.get("session");
 
   // call submitAnswer when enter and control is pressed
   useEffect(() => {
@@ -92,7 +91,7 @@ export default function CourseHandlerComponent({
       toast.success("Richtig!");
       setAnswer("");
       setIsSubmitting(false);
-      mutate(`/api/questions/get?cid=${courseId}`);
+      mutate(`/api/questions/get?cid=${courseId}&cs=${session}`);
     } else {
       toast.error("Leider falsch.");
       setCorrectAnswer(checkAnswerResponse.correctAnswer);
@@ -103,7 +102,7 @@ export default function CourseHandlerComponent({
   const getNewQuestion = () => {
     setCorrectAnswer("");
     setAnswer("");
-    mutate(`/api/questions/get?cid=${courseId}`);
+    mutate(`/api/questions/get?cid=${courseId}&cs=${session}`);
   };
 
   return (

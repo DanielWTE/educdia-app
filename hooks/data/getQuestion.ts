@@ -3,8 +3,16 @@ import swrGetFetcher from "../swrGetFetcher";
 
 const sampleData = {};
 
-export const useGetQuestion = ({ courseId }: { courseId: number }) => {
+export const useGetQuestion = ({ courseId, session }: { courseId: number; session: string }) => {
   let fetchedData, error;
+
+  if (!session) {
+    return {
+      getQuestionData: null,
+      getQuestionIsLoading: false,
+      getQuestionError: "Session not found",
+    };
+  }
 
   const swrOptions = {
     revalidateOnFocus: false,
@@ -12,7 +20,7 @@ export const useGetQuestion = ({ courseId }: { courseId: number }) => {
 
   if (process.env.NEXT_PUBLIC_DEV_MODE !== "true") {
     ({ data: fetchedData, error } = useSWR(
-      `/api/questions/get?cid=${courseId}`,
+      `/api/questions/get?cid=${courseId}&cs=${session}`,
       swrGetFetcher,
       swrOptions,
     ));
