@@ -24,4 +24,6 @@ ENV NEXT_PUBLIC_KINDE_CONNECTION_GOOGLE=
 ENV NEXT_PUBLIC_KINDE_CONNECTION_GITHUB=
 ENV OPENAI_API_KEY=
 
+RUN npx prisma generate
+
 CMD ["sh", "-c", "npm run build && npm start"]
