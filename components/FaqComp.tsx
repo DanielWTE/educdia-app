@@ -64,7 +64,7 @@ export default function FaqComponent() {
           </div>
           <div className="mt-10 lg:col-span-7 lg:mt-0">
             <dl className="space-y-10">
-              {faqs.map((faq) => (
+              {faqs.map((faq: any) => (
                 <div key={faq.question}>
                   <dt className="text-base font-semibold leading-7 text-gray-900">
                     {faq.question}

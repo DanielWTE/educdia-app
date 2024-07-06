@@ -44,7 +44,7 @@ export default function Footer() {
       <hr className="border-t border-gray-200" />
       <div className="mx-auto max-w-7xl px-6 py-12 md:flex md:items-center md:justify-between lg:px-8">
         <div className="flex justify-center space-x-6 md:order-2">
-          {navigation.map((item) => (
+          {navigation.map((item: any) => (
             <Link
               key={item.name}
               href={item.href}

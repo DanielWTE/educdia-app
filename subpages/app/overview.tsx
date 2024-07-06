@@ -58,7 +58,7 @@ export default function Overview({ user }: any) {
                     (unfinished) => unfinished.course_id === course.course_id
                   )
               )
-              .map((course) => (
+              .map((course: any) => (
                 <CourseCardComponent
                   key={course.course_id}
                   id={course.course_id}
@@ -81,7 +81,7 @@ export default function Overview({ user }: any) {
           </p>
           <hr className="border-gray-200 border-b mt-4" />
           <div className="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2 lg:grid-cols-3">
-            {unfinishedCourses.map((course) => (
+            {unfinishedCourses.map((course: any) => (
               <UnfinishedCourseCardComponent
                 key={course.course_id}
                 id={course.course_id}
