@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
     const courses = await prisma.courses.findMany();
 
-    const formattedCourses = courses.map((course) => {
+    const formattedCourses = courses.map((course: any) => {
       return {
         course_id: course.course_id,
         name: course.name,
