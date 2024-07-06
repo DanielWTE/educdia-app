@@ -44,8 +44,8 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const questions = data.flatMap((category) =>
-      category.questions.map((question) => ({
+    const questions = data.flatMap((category: any) =>
+      category.questions.map((question: any) => ({
         ...question,
         category: category.name,
       }))
