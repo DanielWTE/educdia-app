@@ -28,7 +28,7 @@ Users have the option to sign up and create courses with questions.
 Upon commencing a course, users will receive questions to answer. Subsequently, they will receive responses from OpenAI's GPT-4o API in JSON format after answering each question.
 
 ```json
-{ "correct": <true/false>, "answer": "<answer>" }
+{ "correct": false, "answer": "Uhm actually 🤓👆" }
 ```
 - `correct` is a boolean that indicates if the answer is correct or not.
 - `answer` is the correct answer to the question, if the user's answer is incorrect.
