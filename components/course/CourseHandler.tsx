@@ -8,6 +8,8 @@ import { mutate } from "swr";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { useGetCourseProgress } from "@/hooks/data/getCourseProgress";
+import { AnimatePresence, motion } from "framer-motion";
+import { Cross, Checkmark } from "./Animations";
 
 export default function CourseHandlerComponent({
   courseId,
@@ -30,6 +32,8 @@ export default function CourseHandlerComponent({
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [courseProgress, setCourseProgress] = useState([]) as any;
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [isIncorrect, setIsIncorrect] = useState(false);
 
   useEffect(() => {
     if (!getQuestionIsLoading && getQuestionData?.data) {
@@ -71,6 +75,19 @@ export default function CourseHandlerComponent({
     };
   }, []);
 
+  useEffect(() => {
+    if (isCorrect || isIncorrect) {
+      const timeout = setTimeout(() => {
+        setIsCorrect(false);
+        setIsIncorrect(false);
+      }, 1500);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [isCorrect, isIncorrect]);
+
   const submitAnswer = async () => {
     if (!answer) {
       return;
@@ -96,24 +113,30 @@ export default function CourseHandlerComponent({
 
     if (!checkAnswerRequest.ok) {
       toast.error("Ein Fehler ist aufgetreten. Bitte versuche es erneut.");
+      setIsCorrect(false);
+      setIsIncorrect(false);
       setIsSubmitting(false);
       return;
     }
 
     if (checkAnswerResponse.correct) {
-      toast.success("Richtig!");
+      setIsCorrect(true);
+      setIsIncorrect(false);
       setAnswer("");
       setIsSubmitting(false);
       mutate(`/api/questions/get?cid=${courseId}&cs=${session}`);
       mutate(`/api/courses/progress?cid=${courseId}&cs=${session}`);
     } else {
-      toast.error("Falsch!");
+      setIsCorrect(false);
+      setIsIncorrect(true);
       setCorrectAnswer(checkAnswerResponse.correctAnswer);
       setIsSubmitting(false);
     }
   };
 
   const getNewQuestion = () => {
+    setIsCorrect(false);
+    setIsIncorrect(false);
     setCorrectAnswer("");
     setAnswer("");
     mutate(`/api/questions/get?cid=${courseId}&cs=${session}`);
@@ -122,7 +145,18 @@ export default function CourseHandlerComponent({
 
   return (
     <div className="flex flex-col min-h-full justify-center items-center">
-      <div className="border-b border-gray-200 bg-white p-6 rounded-lg shadow-sm md:w-[120vw] max-w-lg w-full">
+      <motion.div
+        className={`relative p-6 rounded-lg shadow-sm md:w-[120vw] max-w-lg w-full border-b border-gray-200`}
+        initial={{ boxShadow: "0px 0px 0px rgba(0, 0, 0, 0)" }}
+        animate={{
+          boxShadow: isCorrect
+            ? "0px 0px 50px rgba(0, 255, 0, 0.4)"
+            : isIncorrect
+            ? "0px 0px 50px rgba(255, 0, 0, 0.4)"
+            : "0px 0px 10px rgba(0, 0, 0, 0.1)",
+        }}
+        transition={{ duration: 0.5 }}
+      >
         {getQuestionIsLoading &&
         !questionData &&
         !courseProgress &&
@@ -130,8 +164,8 @@ export default function CourseHandlerComponent({
           <div>Loading...</div>
         ) : (
           <div key={questionData.question_id}>
-            <div className="flex justify-between">
-              <div className="text-gray-500 text-sm">
+            <div className="flex justify-between items-center">
+              <div className="text-gray-500 text-sm max-w-xs line-clamp-2">
                 {questionData.category}
               </div>
               <div className="text-gray-500 text-sm">
@@ -174,12 +208,16 @@ export default function CourseHandlerComponent({
             </div>
           </div>
         )}
-      </div>
+        <AnimatePresence>
+          {isCorrect && <Checkmark />}
+          {isIncorrect && <Cross />}
+        </AnimatePresence>
+      </motion.div>
       {/* small hint */}
-      <div className="mt-4 text-xs text-gray-500">
+      <div className="mt-4 text-xs text-gray-500 text-center">
         Drücke <kbd>Strg</kbd> + <kbd>Enter</kbd> um die Antwort abzuschicken
       </div>
-      <div className="mt-4 text-xs text-gray-500">
+      <div className="mt-4 text-xs text-gray-500 text-center">
         In dieser Session hast du {parseInt(courseProgress?.correctAnswers)}{" "}
         richtige und {parseInt(courseProgress?.incorrectAnswers)} falsche
         Antworten gegeben.
