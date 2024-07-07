@@ -86,3 +86,25 @@ export function SimpleButtonDanger({
     </button>
   );
 }
+
+export function SimpleButtonWithLoaderSmall({
+  text,
+  onClick,
+  isLoading,
+}: {
+  text: string;
+  onClick: any;
+  isLoading: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      className={`rounded-md bg-white px-2 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50
+      ${isLoading ? "bg-gray-300 hover:bg-gray-200" : ""}`}
+      onClick={onClick}
+      disabled={isLoading}
+    >
+      {isLoading ? <ButtonLoaderWithoutMargin isSubmitting={true} /> : text}
+    </button>
+  );
+}

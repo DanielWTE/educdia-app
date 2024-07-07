@@ -3,7 +3,10 @@
 import { useGetQuestion } from "@/hooks/data/getQuestion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { SimpleButtonWithLoader } from "../elements/Buttons";
+import {
+  SimpleButtonWithLoader,
+  SimpleButtonWithLoaderSmall,
+} from "../elements/Buttons";
 import { mutate } from "swr";
 import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
@@ -206,6 +209,30 @@ export default function CourseHandlerComponent({
                 />
               )}
             </div>
+            {!correctAnswer && (
+              <>
+                <div className="relative">
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 flex items-center"
+                  >
+                    <div className="w-full border-t border-gray-300" />
+                  </div>
+                  <div className="relative flex justify-center mt-4">
+                    <span className="bg-slate-100 px-2 text-sm text-gray-500">
+                      Mehr Aktionen &darr;
+                    </span>
+                  </div>
+                </div>
+                <div className="flex justify-center mt-4 gap-4">
+                  <SimpleButtonWithLoaderSmall
+                    text="Neue Frage"
+                    onClick={getNewQuestion}
+                    isLoading={false}
+                  />
+                </div>
+              </>
+            )}
           </div>
         )}
         <AnimatePresence>
