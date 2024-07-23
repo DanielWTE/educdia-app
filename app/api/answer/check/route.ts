@@ -107,6 +107,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       - Falls die Antwort nicht wirklich falsch ist, gib die Antwort als richtig an.
       - Teilweise richtige Antworten sind als richtig zu werten.
       - Antworten die nicht präzise sind, aber richtige Elemente enthalten, sind als richtig zu werten.
+      - Solange der Kontext der Antwort korrekt ist, ist die Antwort als richtig zu werten.
       - Die Antwort muss IMMER in folgendem JSON-Format sein: { "correct": <true/false>, "answer": "<answer>" }, und muss gültiges JSON sein.
       - Deine Antwort darf nicht in Markdown sein, sondern muss in JSON sein.
       - Beachte was du in der Antwort schreibst, zeichen wie " oder ' können das JSON Format beeinflussen.
